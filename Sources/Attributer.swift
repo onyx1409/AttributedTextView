@@ -535,8 +535,18 @@ open class Attributer {
      -parameter font: The UIFont that will be applied
      */
     open func font(_ font: UIFont?) -> Attributer {
-        if font != nil {
-            return fontName(font!.fontName).size(font!.pointSize)
+       if let font = font {
+//            return fontName(font!.fontName).size(font!.pointSize)
+            for range in self.ranges {
+                guard range.location != NSNotFound else { return self }
+                let substring = self.attributedText.attributedSubstring(from: range)
+                if substring.length > 0, let font = substring.attribute(NSAttributedString.Key.font, at: 0, effectiveRange:nil) as? UIFont {
+                    self.attributedText.addAttribute(NSAttributedString.Key.font, value: font, range: range)
+                } else {
+                    self.attributedText.addAttribute(NSAttributedString.Key.font, value: font, range: range)
+                }
+            }
+            return self
         }
         return self
     }
